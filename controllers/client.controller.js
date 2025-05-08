@@ -48,6 +48,60 @@ const sendMessage = async (req, res) => {
     }
 }
 
+const sendFeedback = async (req, res) => {
+    try {
+        const body = req.body;
+
+        const validator = Joi.object({
+            name: Joi.string().required(),
+            role: Joi.string().required(),
+            company: Joi.string().required(),
+            rating: Joi.number().required(),
+            feedback: Joi.string().required(),
+        })
+
+        const {error} = validator.validate(body);
+
+        if (error) throw new Error("Bad Request")
+        const messageData = clientService.sendFeedback(body);
+    
+        sendResponse(res, 200, "Feedback Sent!", messageData);
+    } catch (e) {
+        console.log(e)
+        sendResponse(res, 400, e.message, null)
+    }
+}
+
+const getEventList = async (req, res) => {
+    try {
+        const eventListData = await clientService.getEventList();
+
+        sendResponse(res, 200, 'Event list fetched successfully', eventListData);
+    } catch (error) {
+        sendResponse(res, 400, 'Fetching event list failed', error.message);
+    }
+}
+
+const getFeedbackList = async (req, res) => {
+    try {
+        const eventListData = await clientService.getFeedbackList();
+
+        sendResponse(res, 200, 'Feedback list fetched successfully', eventListData);
+    } catch (error) {
+        sendResponse(res, 400, 'Fetching feedback list failed', error.message);
+    }
+}
+
+const getLastThreeFeedbackList = async (req, res) => {
+    try {
+        const eventListData = await clientService.getLastThreeFeedbackList();
+
+        sendResponse(res, 200, 'Feedback list fetched successfully', eventListData);
+    } catch (error) {
+        sendResponse(res, 400, 'Fetching feedback list failed', error.message);
+    }
+}
+
 const getVerificationCodeForEmail = async (req, res) => {
     try {
         const body = req.body;
@@ -109,7 +163,11 @@ const verifyEmail = async (req, res) => {
 
 module.exports = {
     sendMessage,
+    sendFeedback,
     getVerificationCodeForEmail,
     verifyEmail,
-    getHashedPassword
+    getHashedPassword,
+    getEventList,
+    getFeedbackList,
+    getLastThreeFeedbackList
 }
